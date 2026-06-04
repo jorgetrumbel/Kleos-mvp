@@ -104,19 +104,21 @@
 
 **Contenido:**
 - Saludo personalizado con nombre del coach
-- **Alerta de pagos pendientes** (si existen): muestra cantidad + botón para revisar
-- **Tarjeta de resumen semanal:** sesiones completadas / sesiones totales + barra de progreso
-- **Grid de estadísticas (3 columnas):**
-  - Sesiones de la semana
-  - Tiempo total entrenado
-  - Horas totales de atletas
-- **Gráfico de línea:** Tiempo de entrenamiento semanal (últimas 4 semanas)
-- **Próxima sesión:** nombre del atleta, deporte, hora, duración
-- **Mensaje reciente** de un atleta (preview)
-- Botón: "Ver plan" → navega a tab Planificación
+- **Banner de mensajes pendientes** (si existen): badge con cantidad de atletas sin respuesta + botón para abrir panel
+- **Banner de pagos pendientes** (si existen): badge con cantidad + botón para revisar
+- **Cards de métricas de negocio (fila superior):**
+  - Ingresos del mes actual (con flecha de variación vs mes anterior)
+  - Ingresos proyectados del mes
+- **Cards de métricas de negocio (fila inferior):**
+  - Atletas activos con barra de capacidad (activos / máximo del plan)
+  - Tasa de completitud mensual de entrenamientos (%)
+- **Gráfico de ingresos** (`AreaChart` con gradiente): últimos 5 meses, con tooltip personalizado
+- **Gráfico de completitud semanal** (`BarChart`): últimas 4 semanas, barras coloreadas por umbral (verde ≥ 80%, ámbar ≥ 60%, rojo < 60%)
+- **Próximas sesiones grupales:** lista de 3 sesiones con tipo, fecha/hora y avatar de iniciales
 
-**Modales:**
-- `CoachPaymentApprovalModal` — abierto desde la alerta de pagos pendientes
+**Modales / Paneles:**
+- `CoachPaymentApprovalModal` — abierto desde el banner de pagos pendientes
+- `MessagesPanel` (slide-up interno) — lista de atletas con mensajes pendientes, abierto desde el banner de mensajes
 
 ---
 
@@ -150,10 +152,15 @@
 
 #### 2.2.3 Plan del Atleta (vista desde Coach)
 **Archivo:** `src/app/components/coach/AthleteCalendarPlan.tsx`
-- Header: Avatar + nombre + botón volver
-- Vista de calendario del atleta
-- Sesiones asignadas por mes
-- Indicadores de completado / programado
+- Header: nombre del atleta + botón volver
+- Vista de calendario mensual con navegación de meses
+- Indicadores por día: completado / sin puntuar / programado
+- Lista de sesiones del día seleccionado
+- **Botón flotante "+"** → abre `CoachAddWorkoutModal`
+
+**Modal:** `CoachAddWorkoutModal` con dos pestañas:
+- **Biblioteca** (default): búsqueda de planes, filtros por categoría, tarjetas de plan con badges de tipos de bloque y conteo de ejercicios; al seleccionar un plan se muestran opciones de fecha y frecuencia (Una vez / Diario / Semanal); botón "Asignar plan"
+- **Manual**: grid de 10 deportes para agregar sesión rápida con fecha; botón "Agregar"
 
 #### 2.2.4 Métricas del Atleta
 **Archivo:** `src/app/components/coach/AthleteMetrics.tsx`
@@ -196,19 +203,24 @@
 **Archivo:** `src/app/components/coach/CoachCalendar.tsx`
 
 **Contenido:**
-- Header: Mes y año actual + flechas de navegación
-- Toggle: Vista Mes / Vista Semana
-- Grid del calendario:
-  - Cabeceras de días de la semana
-  - Celdas de días con indicadores de eventos
-  - Resaltado del día actual
-- **Sección "Hoy":** lista de actividades del día seleccionado
-- **Sección "Próximas actividades":** próximos 7 días
+- Header: Mes y año actual + flechas de navegación (vista mensual única, sin toggle)
+- Grid del calendario mensual:
+  - Cabeceras de días de la semana (L M M J V S D)
+  - Celdas de días seleccionables; día actual seleccionado por defecto
+  - Indicadores de eventos (puntos bajo el número de día):
+    - `bg-primary` (azul): sesión individual de atleta programada
+    - `bg-purple-400` (púrpura): sesión grupal creada por el coach
+  - Clic en el mismo día seleccionado lo deselecciona
+- **Sección inferior — actividades del día seleccionado:**
+  - Lista de sesiones individuales de atletas
+  - **`GroupSessionCard`** expandible para cada sesión grupal:
+    - Título, tipo, hora, lugar (si aplica)
+    - Spots disponibles (participantes / máximo)
+    - Badges de planes con acceso (o "Todos los planes")
+- **Botón flotante "+"** (púrpura) → abre `CreateGroupSessionModal`
 
-**Tipos de evento en el calendario:**
-- Sesión individual de atleta
-- Sesión grupal
-- Evento especial
+**Modales:**
+- `CreateGroupSessionModal` — crear nueva sesión grupal con fecha, tipo, lugar, cupo y control de acceso por plan
 
 ---
 
@@ -294,14 +306,42 @@ El tab de planificación tiene 3 sub-vistas navegadas mediante estado:
 **Archivo:** `src/app/components/coach/CoachSettings.tsx`
 **Acceso:** Botón de ajustes en la esquina superior derecha de CoachView
 
-**Contenido:**
+**Contenido (página principal):**
 - Tarjeta de perfil: avatar, nombre, email
-- **Sección Cuenta:** Editar perfil, Privacidad y seguridad
+- **Sección Cuenta:** Editar perfil
 - **Sección Coach:** Configuración de coach, Suscripción y facturación
 - **Sección Preferencias:** Toggle Notificaciones, Toggle Modo oscuro
 - **Sección Soporte:** Ayuda y soporte
 - Versión de la app
 - Botón: "Cerrar sesión" (rojo)
+
+**Sub-páginas (navegadas via estado `subPage`):**
+
+#### Editar Perfil (`EditProfilePage`)
+- `AvatarPicker`: cámara + selector de archivo
+- Tarjeta de información personal: nombre, apellido, email, teléfono, ciudad, fecha de nacimiento
+- Tarjeta de información del negocio: nombre del negocio, frase de presentación, años de experiencia, chips de deportes (multi-selección)
+- Tarjeta de redes sociales: Instagram, Strava, YouTube, Twitter (inputs inline)
+- Tarjeta de cambio de contraseña: contraseña actual, nueva, confirmación
+
+#### Configuración de Coach (`CoachConfigPage`)
+- Lista de planes de suscripción de atletas (CRUD)
+- Cada plan muestra: nombre, frecuencia, precio, deportes, botón eliminar
+- Botón: "Nuevo plan" → abre `PlanFormModal` (inline)
+- `PlanFormModal`: nombre, descripción, frecuencia (semanal/mensual), sesiones, precio, chips de deporte
+
+#### Suscripción a Athletica (`SubscriptionPage`)
+- Banner del plan actual con badge "Tu plan"
+- Listado de 5 planes (Free / Starter / Pro / Max / Enterprise) con radio button de selección
+- Cada tarjeta: nombre, rango de atletas, precio/mes, features principales
+- Sección de facturación: método de pago, próxima factura
+
+#### Acerca de / Soporte (`AboutPage`)
+- Ícono y nombre de la app + versión
+- Tarjeta de contacto: email, teléfono, chat en vivo
+- Tarjeta de recursos: documentación, centro de ayuda
+- Redes sociales del producto
+- Links legales: términos de servicio, política de privacidad
 
 ---
 
@@ -554,6 +594,35 @@ El tab de planificación tiene 3 sub-vistas navegadas mediante estado:
 - Notas (opcional, textarea)
 - Botones: "Cancelar" | "Crear Ejercicio" / "Guardar Cambios"
 
+### 4.10 CreateGroupSessionModal (Crear sesión grupal)
+**Archivo:** `src/app/components/coach/CreateGroupSessionModal.tsx`
+**Activado desde:** CoachCalendar (botón "+" flotante)
+
+- Título de la sesión (obligatorio)
+- Tipo de actividad (dropdown: Trail Running, Running, Ciclismo, etc.)
+- Fecha (obligatoria) y Hora (obligatoria)
+- Lugar (opcional)
+- Máximo de participantes (número)
+- **Control de acceso por plan:** toggle "Todos los planes" o selección individual de planes con checkboxes
+- Notas (opcional)
+- Botones: "Cancelar" | "Crear sesión" (deshabilitado si faltan campos obligatorios o no hay planes seleccionados)
+
+### 4.11 CoachAddWorkoutModal (Asignar workout desde biblioteca)
+**Archivo:** `src/app/components/coach/CoachAddWorkoutModal.tsx`
+**Activado desde:** AthleteCalendarPlan (botón "+" flotante)
+
+**Pestaña Biblioteca:**
+- Barra de búsqueda de planes
+- Chips de filtro por categoría (scroll horizontal)
+- Lista de planes con: nombre, notas, tipos de bloque (badges de colores), conteo de ejercicios
+- Al seleccionar un plan: selector de fecha + frecuencia (Una vez / Diario / Semanal)
+- Botón: "Asignar plan" (deshabilitado si no hay plan seleccionado)
+
+**Pestaña Manual:**
+- Selector de fecha
+- Grid de 10 tipos de deporte (Trail Running, Running, Ciclismo, etc.)
+- Botón: "Agregar" (deshabilitado si no hay deporte seleccionado)
+
 ### 4.9 DrawingBoard (Pizarra de dibujo)
 **Archivo:** `src/app/components/coach/plan/DrawingBoard.tsx`
 **Activado desde:** WorkoutPlanner (sección archivos adjuntos)
@@ -578,7 +647,7 @@ El tab de planificación tiene 3 sub-vistas navegadas mediante estado:
 | 6 | Registro — Paso 5 Coach (Código) | Pantalla | Coach | `CreateAccount.tsx` |
 | 7 | Registro — Paso 2 Atleta (Perfil físico) | Pantalla | Atleta | `CreateAccount.tsx` |
 | 8 | Registro — Paso 3 Atleta (Código coach) | Pantalla | Atleta | `CreateAccount.tsx` |
-| 9 | Coach — Tab Inicio | Pantalla | Coach | `CoachHome.tsx` |
+| 9 | Coach — Tab Inicio (Dashboard de negocio) | Pantalla | Coach | `CoachHome.tsx` |
 | 10 | Coach — Tab Atletas (lista) | Pantalla | Coach | `CoachAthletes.tsx` |
 | 11 | Coach — Atleta: Chat | Sub-vista | Coach | `CoachAthletes.tsx` |
 | 12 | Coach — Atleta: Historial de Pagos | Sub-vista | Coach | `AthletePaymentHistory.tsx` |
@@ -586,11 +655,15 @@ El tab de planificación tiene 3 sub-vistas navegadas mediante estado:
 | 14 | Coach — Atleta: Métricas | Sub-vista | Coach | `AthleteMetrics.tsx` |
 | 15 | Coach — Atleta: Perfil | Sub-vista | Coach | `AthleteProfile.tsx` |
 | 16 | Coach — Tab Comunidad | Pantalla | Coach | `CoachCommunity.tsx` |
-| 17 | Coach — Tab Calendario | Pantalla | Coach | `CoachCalendar.tsx` |
+| 17 | Coach — Tab Calendario (mensual + sesiones grupales) | Pantalla | Coach | `CoachCalendar.tsx` |
 | 18 | Coach — Tab Planificación: Biblioteca | Pantalla | Coach | `PlanLibrary.tsx` |
 | 19 | Coach — Planificación: Editor | Pantalla | Coach | `WorkoutPlanner.tsx` |
 | 20 | Coach — Planificación: Biblioteca Ejercicios | Pantalla | Coach | `ExercisesLibrary.tsx` |
 | 21 | Coach — Configuración | Panel lateral | Coach | `CoachSettings.tsx` |
+| 21a | Coach — Config: Editar Perfil | Sub-página | Coach | `CoachSettings.tsx` |
+| 21b | Coach — Config: Configuración de Coach (planes atleta) | Sub-página | Coach | `CoachSettings.tsx` |
+| 21c | Coach — Config: Suscripción a Athletica | Sub-página | Coach | `CoachSettings.tsx` |
+| 21d | Coach — Config: Acerca de / Soporte | Sub-página | Coach | `CoachSettings.tsx` |
 | 22 | Atleta — Tab Inicio | Pantalla | Atleta | `AthleteHome.tsx` |
 | 23 | Atleta — Tab Entrenador (Perfil) | Pantalla | Atleta | `AthleteCoach.tsx` |
 | 24 | Atleta — Entrenador: Chat | Sub-vista | Atleta | `AthleteCoach.tsx` |
@@ -616,5 +689,8 @@ El tab de planificación tiene 3 sub-vistas navegadas mediante estado:
 | 44 | **Modal:** Ver Atletas Asignados | Bottom sheet inline | Coach | `PlanLibrary.tsx` |
 | 45 | **Modal:** Confirmación Eliminar Plan | Alert inline | Coach | `PlanLibrary.tsx` |
 | 46 | **Modal:** Ver Ejercicio | Bottom sheet inline | Coach | `ExercisesLibrary.tsx` |
+| 47 | **Modal:** CreateGroupSessionModal | Bottom sheet | Coach | `CreateGroupSessionModal.tsx` |
+| 48 | **Modal:** CoachAddWorkoutModal (Biblioteca + Manual) | Bottom sheet | Coach | `CoachAddWorkoutModal.tsx` |
+| 49 | **Panel:** MessagesPanel (atletas con mensajes pendientes) | Slide-up inline | Coach | `CoachHome.tsx` |
 
-**Total: 46 pantallas/vistas/modales**
+**Total: 50 pantallas/vistas/modales** *(incluye 4 sub-páginas de CoachSettings)*

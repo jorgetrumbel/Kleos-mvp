@@ -236,16 +236,31 @@ export default function AthleteCalendar({ onStartWorkout, unscoredSessions, onOp
   };
 
   const handleWorkoutClick = (workout: typeof mockAllWorkouts[0]) => {
+    if (workout.completed && !workout.rpe) {
+      const session = unscoredSessions.find(s => s.name === workout.title) ?? {
+        id: `cal-${workout.id}`,
+        name: workout.title,
+        date: workout.date,
+        durationSec: 0,
+        scored: false,
+      };
+      onOpenRPE(session);
+      return;
+    }
     setSelectedWorkout(workout);
   };
 
   const handleOpenRPEForWorkout = () => {
     if (selectedWorkout) {
-      const session = unscoredSessions.find(s => s.name === selectedWorkout.title);
-      if (session) {
-        onOpenRPE(session);
-        setSelectedWorkout(null);
-      }
+      const session = unscoredSessions.find(s => s.name === selectedWorkout.title) ?? {
+        id: `cal-${selectedWorkout.id}`,
+        name: selectedWorkout.title,
+        date: selectedWorkout.date,
+        durationSec: 0,
+        scored: false,
+      };
+      onOpenRPE(session);
+      setSelectedWorkout(null);
     }
   };
 

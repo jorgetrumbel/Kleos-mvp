@@ -134,23 +134,35 @@ export default function AthleteHome({
 
   const handleOpenRPEForWorkout = () => {
     if (selectedWorkout && selectedWorkout.completed) {
-      const session = unscoredSessions.find(s => s.name === selectedWorkout.title);
-      if (session) {
-        onOpenRPE(session);
-        setSelectedWorkout(null);
-      }
+      const session = unscoredSessions.find(s => s.name === selectedWorkout.title) ?? {
+        id: `mock-${selectedWorkout.id}`,
+        name: selectedWorkout.title,
+        date: selectedWorkout.date,
+        durationSec: 0,
+        scored: false,
+      };
+      onOpenRPE(session);
+      setSelectedWorkout(null);
     }
   };
 
   const handleUnscoredClick = (session: CompletedSession) => {
-    // Find the full workout details
-    const workoutDetails = completedWorkoutsDetails.find(w => w.title === session.name);
-    if (workoutDetails) {
-      setSelectedWorkout(workoutDetails);
-    } else {
-      // Fallback to just opening RPE modal
+    onOpenRPE(session);
+  };
+
+  const handleCompletedWorkoutClick = (workout: typeof completedWorkoutsDetails[0]) => {
+    if (!workout.rpe) {
+      const session = unscoredSessions.find(s => s.name === workout.title) ?? {
+        id: `mock-${workout.id}`,
+        name: workout.title,
+        date: workout.date,
+        durationSec: 0,
+        scored: false,
+      };
       onOpenRPE(session);
+      return;
     }
+    setSelectedWorkout(workout);
   };
 
   return (
@@ -327,6 +339,34 @@ export default function AthleteHome({
             <Line type="monotone" dataKey="value" stroke="#c4ff0e" strokeWidth={2} dot={{ fill: '#c4ff0e', r: 4 }} />
           </LineChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Last Session */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h3>Última sesión</h3>
+        </div>
+        <button
+          onClick={() => handleCompletedWorkoutClick(completedWorkoutsDetails[0])}
+          className="w-full bg-card rounded-xl p-4 border border-border hover:bg-muted/30 transition-colors text-left"
+        >
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-lg shrink-0 bg-green-500/20">
+              <Clock className="w-5 h-5 text-green-400" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-start justify-between gap-2">
+                <p className="font-medium mb-1">{completedWorkoutsDetails[0].title}</p>
+                {!completedWorkoutsDetails[0].rpe && (
+                  <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {completedWorkoutsDetails[0].time} · {completedWorkoutsDetails[0].type} · Completado
+              </p>
+            </div>
+          </div>
+        </button>
       </div>
 
       {/* Upcoming Trainings */}
