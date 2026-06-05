@@ -15,6 +15,10 @@ Bienvenido al repositorio de documentación de **Athletica**, la app de gestión
 | 04 | [Diagrama Entidad-Relación](./04_DIAGRAMA_ENTIDAD_RELACION.md) | ERD completo con 22 entidades, relaciones, índices recomendados y notas de diseño |
 | 05 | [Arquitectura](./05_ARQUITECTURA.md) | Arquitectura de producción, árbol de componentes, API REST, autenticación, infraestructura cloud |
 | 06 | [Guía de Desarrollo](./06_GUIA_DE_DESARROLLO.md) | Convenciones de código, Git flow, migración al backend, tipos de dato, checklist de calidad y glosario |
+| 07 | [Flujo UX y Navegación](./07_FLUJO_UX_NAVEGACION.md) | Mapa botón a botón de cada pantalla: a dónde lleva cada elemento interactivo |
+| 08 | [Contratos de API](./08_API_CONTRATOS.md) | 74 endpoints REST + 7 eventos WebSocket con request/response completos, validaciones y códigos de error |
+| 09 | [Gestión de Estado](./09_ESTADO_Y_DATOS.md) | Arquitectura de estado: Zustand stores, React Query, WebSocket en tiempo real y orden de migración |
+| 10 | [Wireframes](./10_WIREFRAMES.md) | Wireframes ASCII de las 50 pantallas, sub-vistas y modales de la app (390px, mobile-first) |
 
 ---
 
