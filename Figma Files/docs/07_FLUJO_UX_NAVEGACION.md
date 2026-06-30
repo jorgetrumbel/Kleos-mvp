@@ -161,17 +161,18 @@
 
 | Elemento | Acción | Destino |
 |----------|--------|---------|
-<<<<<<< HEAD
 | Banner **"N pagos pendientes"** | Tap | ⊕ **CoachPaymentApprovalModal** |
 | Botón **"Ver plan"** | Tap | → **CoachPlan** (PlanLibrary) y activa tab Planificación |
 | Tarjeta de próxima sesión | Tap | → **CoachAthletes** → filtrado al atleta de la sesión |
 | Preview de mensaje | Tap | → **CoachAthletes** → Chat con ese atleta |
-=======
 | Banner **"N mensajes pendientes"** | Tap | ⊕ **MessagesPanel** (slide-up con lista de atletas) |
 | MessagesPanel: tarjeta de atleta | Tap | ⊗ Cierra panel → **CoachAthletes** → Chat con ese atleta |
 | MessagesPanel: botón **"×"** / área oscura | Tap | ⊗ Cierra el panel |
 | Banner **"N pagos pendientes"** | Tap | ⊕ **CoachPaymentApprovalModal** |
 | Tarjeta de próxima sesión grupal | Tap | ⟳ Informativo (no navega en prototipo) |
+<<<<<<< HEAD
+>>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
+=======
 >>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
 
 #### CoachPaymentApprovalModal (abierto desde CoachHome)
@@ -224,9 +225,6 @@
 |----------|--------|---------|
 | Botón **"←"** (volver) | Tap | ↩ → **CoachAthletes** (lista) |
 | Navegación mes (← →) | Tap | ⟳ Cambia el mes visible en el calendario |
-<<<<<<< HEAD
-| Día del calendario | Tap | ⟳ Muestra sesiones de ese día |
-=======
 | Día del calendario | Tap | ⟳ Selecciona ese día, muestra sus sesiones abajo |
 | Botón **"Ver todos"** | Tap | ⟳ Deselecciona el día, vuelve a vista del día actual |
 | Botón **"+"** flotante | Tap | ⊕ **CoachAddWorkoutModal** |
@@ -248,6 +246,9 @@
 | **[Pestaña Manual]** Input de fecha | Seleccionar | ⟳ Actualiza la fecha |
 | **[Pestaña Manual]** Chip de deporte | Tap | ⟳ Selecciona el deporte (toggle) |
 | **[Pestaña Manual]** Botón **"Agregar"** | Tap | ⟳ Agrega la sesión manual al atleta, ⊗ cierra modal |
+<<<<<<< HEAD
+>>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
+=======
 >>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
 
 #### Sub-vista: Métricas del Atleta
@@ -292,12 +293,7 @@
 |----------|--------|---------|
 | Botón **"←"** (mes anterior) | Tap | ⟳ Muestra mes anterior |
 | Botón **"→"** (mes siguiente) | Tap | ⟳ Muestra mes siguiente |
-<<<<<<< HEAD
-| Toggle **"Mes"** | Tap | ⟳ Cambia a vista mensual |
-| Toggle **"Semana"** | Tap | ⟳ Cambia a vista semanal |
-| Celda de día en el calendario | Tap | ⟳ Muestra las actividades de ese día en la sección inferior |
-| Tarjeta de actividad (en "Hoy" o "Próximas") | Tap | → **CoachAthletes** → atleta de esa sesión |
-=======
+| Día del calendario | Tap | ⟳ Selecciona ese día, muestra sus sesiones abajo |
 | Celda de día (no seleccionado) | Tap | ⟳ Selecciona ese día, muestra sus actividades abajo |
 | Celda de día (ya seleccionado) | Tap | ⟳ Deselecciona, limpia la sección inferior |
 | **`GroupSessionCard`** (sesión grupal en lista) | Tap | ⟳ Expande/colapsa detalles: tipo, lugar, cupo, planes con acceso |
@@ -319,6 +315,9 @@
 | Textarea Notas | Escribir | ⟳ Actualiza campo |
 | Botón **"Cancelar"** | Tap | ⊗ Cierra modal |
 | Botón **"Crear sesión"** | Tap | ⊗ Crea la sesión grupal, la añade al calendario, selecciona su fecha automáticamente |
+<<<<<<< HEAD
+>>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
+=======
 >>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
 
 ---
@@ -497,18 +496,6 @@
 | Elemento | Acción | Destino |
 |----------|--------|---------|
 | Botón **"←"** / **"×"** (cerrar) | Tap | ⊗ Cierra panel, vuelve a la vista activa |
-<<<<<<< HEAD
-| Tarjeta de perfil | Tap | → Sub-página: **Editar Perfil Coach** |
-| **"Editar perfil"** | Tap | → Sub-página: **Editar Perfil Coach** |
-| **"Privacidad y seguridad"** | Tap | → Sub-página: **Privacidad** |
-| **"Configuración de coach"** | Tap | → Sub-página: **Config Coach** |
-| **"Suscripción y facturación"** | Tap | → Sub-página: **Suscripción Athletica** |
-| Toggle **"Notificaciones"** | Tap | ⟳ Activa / desactiva notificaciones push |
-| Toggle **"Modo oscuro"** | Tap | ⟳ Cambia el tema visual |
-| **"Ayuda y soporte"** | Tap | → Sub-página: **Soporte** |
-| Botón **"Cerrar sesión"** (rojo) | Tap | → **Login** (cierra sesión) |
-
-=======
 | Tarjeta de perfil | Tap | → Sub-página: **Editar Perfil** |
 | **"Editar perfil"** | Tap | → Sub-página: **Editar Perfil** |
 | **"Configuración de coach"** | Tap | → Sub-página: **Config Coach (planes de atletas)** |
@@ -563,6 +550,9 @@
 | Link **"Términos de servicio"** | Tap | → Abre documento legal en navegador |
 | Link **"Política de privacidad"** | Tap | → Abre documento legal en navegador |
 
+<<<<<<< HEAD
+>>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
+=======
 >>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
 ---
 
@@ -797,17 +787,14 @@ LOGIN
 
 COACH VIEW
   ├── [Tab: Inicio]
-<<<<<<< HEAD
-  │     ├── [Banner pagos]      ──→  ⊕ CoachPaymentApprovalModal
-  │     │       ├── [Aprobar]   ──→  ⟳ estado aprobado
-  │     │       └── [Rechazar]  ──→  ⟳ estado rechazado
-  │     └── [Ver plan]          ──→  Tab: Planificación
-=======
   │     ├── [Banner mensajes]   ──→  ⊕ MessagesPanel
   │     │       └── [Atleta]    ──→  ⊗ ──→ CoachAthletes > Chat
   │     └── [Banner pagos]      ──→  ⊕ CoachPaymentApprovalModal
   │             ├── [Aprobar]   ──→  ⟳ estado aprobado
   │             └── [Rechazar]  ──→  ⟳ estado rechazado
+<<<<<<< HEAD
+>>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
+=======
 >>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
   │
   ├── [Tab: Atletas]
@@ -817,7 +804,6 @@ COACH VIEW
   │     │       ├── [Revisar]   ──→  ⊕ CoachPaymentApprovalModal
   │     │       └── [←]        ──→  Lista Atletas
   │     ├── [Plan]              ──→  Sub-vista: Plan Atleta
-<<<<<<< HEAD
 =======
   │     │       ├── [+]         ──→  ⊕ CoachAddWorkoutModal
   │     │       │     ├── [Asignar plan] ──→ ⊗ asigna plan
@@ -834,13 +820,22 @@ COACH VIEW
   │     └── [Nueva publicación] ──→  ⊕ Modal nueva publicación
   │
   ├── [Tab: Calendario]
-<<<<<<< HEAD
-  │     └── [Día]               ──→  ⟳ muestra sesiones del día
-=======
+| Tarjeta de perfil | Tap | → Sub-página: **Editar Perfil** |
+| **"Editar perfil"** | Tap | → Sub-página: **Editar Perfil** |
+| **"Privacidad y seguridad"** | Tap | → Sub-página: **Privacidad** |
+| **"Configuración de coach"** | Tap | → Sub-página: **Config Coach (planes de atletas)** |
+| **"Suscripción y facturación"** | Tap | → Sub-página: **Suscripción Athletica** |
+| Toggle **"Notificaciones"** | Tap | ⟳ Activa / desactiva notificaciones push |
+| Toggle **"Modo oscuro"** | Tap | ⟳ Cambia el tema visual |
+| **"Ayuda y soporte"** | Tap | → Sub-página: **Soporte** |
+| Botón **"Cerrar sesión"** (rojo) | Tap | → **Login** (cierra sesión) |
   │     ├── [Día]               ──→  ⟳ muestra sesiones del día
   │     ├── [GroupSessionCard]  ──→  ⟳ expande/colapsa detalles
   │     └── [+]                 ──→  ⊕ CreateGroupSessionModal
   │             └── [Crear]     ──→  ⊗ agrega sesión grupal al calendario
+<<<<<<< HEAD
+>>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
+=======
 >>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
   │
   ├── [Tab: Planificación]
@@ -862,8 +857,6 @@ COACH VIEW
   │     └── [Eliminar]          ──→  ⊕ Confirmación
   │
   └── [⚙ Config]               ──→  ⊕ CoachSettings
-<<<<<<< HEAD
-=======
           ├── [Editar perfil]   ──→  EditProfilePage
           │       └── [←]      ──→  CoachSettings
           ├── [Config coach]    ──→  CoachConfigPage (planes de atletas)
@@ -872,6 +865,9 @@ COACH VIEW
           │       └── [←]      ──→  CoachSettings
           ├── [Soporte]         ──→  AboutPage
           │       └── [←]      ──→  CoachSettings
+<<<<<<< HEAD
+>>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
+=======
 >>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
           └── [Cerrar sesión]   ──→  Login
 
@@ -933,12 +929,10 @@ ATHLETE VIEW
 | **WorkoutScreen persiste en segundo plano** | Cuando el atleta navega a otro tab mientras hay un workout activo, el cronómetro sigue corriendo. El banner en Home y el botón de estado global permiten volver al WorkoutScreen. |
 | **PlanLibrary tiene 3 sub-vistas** | La navegación entre PlanLibrary ↔ WorkoutPlanner ↔ ExercisesLibrary se maneja con un estado `view` en `CoachPlan.tsx`, no con rutas separadas. |
 | **CoachAthletes tiene 5 sub-vistas** | Chat, Pagos, Plan, Métricas y Perfil se manejan con un estado `currentView` y `selectedAthlete` en `CoachAthletes.tsx`. |
-<<<<<<< HEAD
-| **AthleteCoach tiene 2 estados** | El mismo componente alterna entre "Perfil del Coach" y "Chat" con un estado booleano interno. |
-| **Modales de confirmación** | Todos los "eliminar" y "descartar" muestran un modal de confirmación antes de ejecutar la acción destructiva. |
-| **Modales de éxito** | PaymentModal y CoachPaymentApprovalModal muestran una pantalla de éxito/rechazo interna antes de cerrarse. |
-| **Navegación a tab desde otra vista** | Botones como "Ver plan" en CoachHome o "Mis entrenamientos" en AthleteCoach cambian el tab activo directamente. |
-=======
+  │     ├── [Banner pagos]      ──→  ⊕ CoachPaymentApprovalModal
+  │     │       ├── [Aprobar]   ──→  ⟳ estado aprobado
+  │     │       └── [Rechazar]  ──→  ⟳ estado rechazado
+  │     └── [Ver plan]          ──→  Tab: Planificación
 | **CoachSettings tiene 4 sub-páginas** | EditProfilePage, CoachConfigPage, SubscriptionPage y AboutPage se manejan con un estado `subPage: 'edit-profile' | 'coach-config' | 'subscription' | 'about' | null` en `CoachSettings.tsx`, usando early returns. |
 | **AthleteCoach tiene 2 estados** | El mismo componente alterna entre "Perfil del Coach" y "Chat" con un estado booleano interno. |
 | **CoachCalendar es solo vista mensual** | Se eliminó el toggle Mes/Semana. La vista es siempre mensual. El día actual queda seleccionado por defecto al montar el componente. |
@@ -946,5 +940,8 @@ ATHLETE VIEW
 | **Modales de confirmación** | Todos los "eliminar" y "descartar" muestran un modal de confirmación antes de ejecutar la acción destructiva. |
 | **Modales de éxito** | PaymentModal y CoachPaymentApprovalModal muestran una pantalla de éxito/rechazo interna antes de cerrarse. |
 | **Navegación a tab desde otra vista** | Botones como "Mis entrenamientos" en AthleteCoach cambian el tab activo directamente. |
+<<<<<<< HEAD
+>>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
+=======
 >>>>>>> 03d55b97e97bd8b347060d5371348126126ab013
 | **CustomEvent para navegación desacoplada** | El botón "Ejercicios" en PlanLibrary dispara `window.dispatchEvent(new CustomEvent('navigate-exercises'))` para comunicarse con el padre `CoachPlan`. |
