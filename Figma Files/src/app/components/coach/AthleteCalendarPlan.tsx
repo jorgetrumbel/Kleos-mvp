@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, ChevronLeft, ChevronRight, Plus, Clock, AlertCircle } from 'lucide-react';
-import AddWorkoutModal from '../athlete/AddWorkoutModal';
+import CoachAddWorkoutModal from './CoachAddWorkoutModal';
+import type { SavedPlan } from './plan/types';
 
 // Mock data: athlete's workouts
 const mockAthleteWorkouts = [
@@ -91,8 +92,11 @@ export default function AthleteCalendarPlan({ athleteName, onBack }: AthleteCale
   };
 
   const handleAddWorkout = (sport: string, date: string) => {
-    console.log('Adding workout for athlete:', sport, date);
-    // In real app, would add to backend
+    console.log('Adding manual workout for athlete:', sport, date);
+  };
+
+  const handleAssignPlan = (plan: SavedPlan, date: string, frequency: string) => {
+    console.log('Assigning plan to athlete:', plan.name, date, frequency);
   };
 
   const handlePrevMonth = () => {
@@ -275,9 +279,11 @@ export default function AthleteCalendarPlan({ athleteName, onBack }: AthleteCale
 
       {/* Add Modal */}
       {showAddModal && (
-        <AddWorkoutModal
+        <CoachAddWorkoutModal
           onClose={() => setShowAddModal(false)}
-          onAdd={handleAddWorkout}
+          onAddManual={handleAddWorkout}
+          onAssignPlan={handleAssignPlan}
+          athleteName={athleteName}
           initialDate={selectedDate || undefined}
         />
       )}

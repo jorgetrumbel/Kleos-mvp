@@ -1,0 +1,644 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RolUsuario {
+  coach
+  atleta
+}
+
+enum EstadoSuscripcionCoach {
+  activa
+  cancelada
+  vencida
+}
+
+enum EstadoSesion {
+  pendiente
+  completada
+  omitida
+}
+
+enum FrecuenciaPlanCoach {
+  semanal
+  mensual
+}
+
+enum EstadoSuscripcionAtleta {
+  activa
+  cancelada
+  vencida
+}
+
+enum EstadoPago {
+  pendiente
+  aprobado
+  rechazado
+}
+
+enum TipoNotificacion {
+  nueva_sesion
+  sesion_completada
+  nuevo_pago
+  pago_aprobado
+  pago_rechazado
+  nuevo_mensaje
+}
+
+enum TipoWearable {
+  apple_health
+  google_fit
+  garmin
+  samsung_health
+}
+
+model Usuario {
+  id               String   @id @default(uuid())
+  email            String   @unique
+  passwordHash     String   @map("password_hash")
+  nombre           String
+  apellido         String
+  fechaNacimiento  DateTime? @map("fecha_nacimiento")
+  avatarUrl        String?  @map("avatar_url")
+  rol              RolUsuario
+  activo           Boolean  @default(true)
+
+  notificaciones Notificacion[]
+
+  mensajesEnviados Mensaje[] @relation("MensajeRemitente")
+
+  mensajesRecibidos Mensaje[] @relation("MensajeDestinatario")
+
+  comentariosPublicacion ComentarioPublicacion[]
+
+  reaccionesPublicacion ReaccionPublicacion[]
+
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  coach            Coach?
+  atleta           Atleta?
+
+  @@map("usuario")
+}
+
+
+model PlanAthletica {
+  id              String   @id @default(uuid())
+  nombre          String
+  descripcion     String?
+  maxAtletas      Int      @map("max_atletas")
+  precioMensual   Decimal  @map("precio_mensual")
+  esEnterprise    Boolean  @default(false) @map("es_enterprise")
+
+  coaches         Coach[]
+  suscripciones   SuscripcionCoach[]
+
+  @@map("plan_athletica")
+}
+
+model Coach {
+  id                  String   @id @default(uuid())
+
+  usuarioId           String   @unique @map("usuario_id")
+  usuario             Usuario  @relation(fields: [usuarioId], references: [id])
+
+  nombreNegocio       String?  @map("nombre_negocio")
+  frase               String?
+  logoUrl             String?  @map("logo_url")
+
+  aniosExperiencia    Int?     @map("anios_experiencia")
+
+  deportes CoachDeporte[]
+
+  ciudad              String?
+
+  instagramUrl        String?  @map("instagram_url")
+  stravaUrl           String?  @map("strava_url")
+
+  codigoVinculacion   String   @unique @map("codigo_vinculacion")
+
+  planAthleticaId     String?  @map("plan_athletica_id")
+  planAthletica       PlanAthletica? @relation(fields: [planAthleticaId], references: [id])
+
+  planesEntrenamiento PlanEntrenamiento[]
+  ejerciciosTemplate EjercicioTemplate[]
+
+  planesComerciales PlanCoachAtleta[]
+
+  atletas             Atleta[]
+  suscripciones       SuscripcionCoach[]
+
+  publicaciones Publicacion[]
+
+  pagosRecibidos Pago[]
+
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  @@index([planAthleticaId])
+  @@map("coach")
+}
+
+model Atleta {
+  id                 String   @id @default(uuid())
+
+  usuarioId          String   @unique @map("usuario_id")
+  usuario            Usuario  @relation(fields: [usuarioId], references: [id])
+
+  coachId            String?  @map("coach_id")
+  coach              Coach?   @relation(fields: [coachId], references: [id])
+
+  tallaCm            Float?   @map("talla_cm")
+  pesoKg             Float?   @map("peso_kg")
+
+  aptitudFisica      Int?     @map("aptitud_fisica")
+
+  objetivo           String?
+  logros             String?
+  estiloVida         String?  @map("estilo_vida")
+
+  vinculadoEn        DateTime? @map("vinculado_en")
+
+  asignaciones Asignacion[]
+  asignacionesGrupo AsignacionAtleta[]
+
+  suscripciones SuscripcionAtleta[]
+
+  pagos Pago[]
+
+  wearables WearableConexion[]
+
+  @@index([coachId])
+  @@map("atleta")
+}
+
+model SuscripcionCoach {
+  id                String @id @default(uuid())
+
+  coachId           String @map("coach_id")
+  coach             Coach  @relation(fields: [coachId], references: [id])
+
+  planAthleticaId   String @map("plan_athletica_id")
+  planAthletica     PlanAthletica @relation(fields: [planAthleticaId], references: [id])
+
+  estado            EstadoSuscripcionCoach
+
+  fechaInicio       DateTime @map("fecha_inicio")
+  fechaRenovacion   DateTime @map("fecha_renovacion")
+
+  montoPagado       Decimal @map("monto_pagado")
+
+  @@index([coachId])
+  @@index([planAthleticaId])
+
+  @@map("suscripcion_coach")
+}
+
+model Deporte {
+  id        String @id @default(uuid())
+
+  nombre    String @unique
+
+  coaches   CoachDeporte[]
+  planes    PlanCoachAtleta[]
+
+  @@map("deporte")
+}
+
+model CoachDeporte {
+  coachId    String @map("coach_id")
+  deporteId  String @map("deporte_id")
+
+  coach      Coach   @relation(fields: [coachId], references: [id], onDelete: Cascade)
+  deporte    Deporte @relation(fields: [deporteId], references: [id], onDelete: Cascade)
+
+  @@id([coachId, deporteId])
+
+  @@index([coachId])
+  @@index([deporteId])
+
+  @@map("coach_deporte")
+}
+
+model PlanEntrenamiento {
+  id                String   @id @default(uuid())
+
+  coachId           String   @map("coach_id")
+  coach             Coach    @relation(fields: [coachId], references: [id])
+
+  nombre            String
+  descripcion       String?
+
+  categoria         String?
+
+  esPlantilla       Boolean  @default(false) @map("es_plantilla")
+  esPublico         Boolean  @default(false) @map("es_publico")
+
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  bloques           BloqueEntrenamiento[]
+
+  asignaciones Asignacion[]
+
+  @@index([coachId])
+
+  @@map("plan_entrenamiento")
+}
+
+model BloqueEntrenamiento {
+  id                  String   @id @default(uuid())
+
+  planId              String   @map("plan_id")
+  plan                PlanEntrenamiento @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  nombre              String
+
+  orden               Int
+
+  comentarios         String?
+
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  ejercicios          EjercicioEnBloque[]
+
+  @@index([planId])
+
+  @@map("bloque_entrenamiento")
+}
+
+model EjercicioTemplate {
+  id                String @id @default(uuid())
+
+  coachId           String? @map("coach_id")
+  coach             Coach? @relation(fields: [coachId], references: [id])
+
+  nombre            String
+
+  descripcion       String?
+
+  categoria         String?
+
+  videoUrl          String? @map("video_url")
+
+  esPublico         Boolean @default(false) @map("es_publico")
+
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  ejercicios        EjercicioEnBloque[]
+
+  @@index([coachId])
+
+  @@map("ejercicio_template")
+}
+
+model EjercicioEnBloque {
+  id                    String @id @default(uuid())
+
+  bloqueId              String @map("bloque_id")
+  bloque                BloqueEntrenamiento @relation(fields: [bloqueId], references: [id], onDelete: Cascade)
+
+  ejercicioTemplateId   String? @map("ejercicio_template_id")
+
+  ejercicioTemplate     EjercicioTemplate? @relation(fields: [ejercicioTemplateId], references: [id])
+
+  orden                 Int
+
+  nombreCustom          String? @map("nombre_custom")
+
+  descripcion           String?
+
+  series                Int?
+
+  repeticiones          Int?
+
+  duracion              Int?
+
+  intensidad            String?
+
+  esTextoLibre          Boolean @default(false) @map("es_texto_libre")
+
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  archivos              ArchivoAdjunto[]
+
+  @@index([bloqueId])
+  @@index([ejercicioTemplateId])
+
+  @@map("ejercicio_en_bloque")
+}
+
+model ArchivoAdjunto {
+  id                    String @id @default(uuid())
+
+  ejercicioEnBloqueId   String @map("ejercicio_en_bloque_id")
+
+  ejercicioEnBloque EjercicioEnBloque @relation(fields: [ejercicioEnBloqueId], references: [id], onDelete: Cascade)
+
+  nombreArchivo         String @map("nombre_archivo")
+
+  url                   String
+
+  tipo                  String
+
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  @@index([ejercicioEnBloqueId])
+
+  @@map("archivo_adjunto")
+}
+
+model Asignacion {
+  id                  String @id @default(uuid())
+
+  atletaId            String @map("atleta_id")
+  atleta              Atleta @relation(fields: [atletaId], references: [id])
+
+  planEntrenamientoId String @map("plan_entrenamiento_id")
+  planEntrenamiento   PlanEntrenamiento @relation(fields: [planEntrenamientoId], references: [id])
+
+  fechaInicio         DateTime @map("fecha_inicio")
+
+  activa              Boolean @default(true)
+
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  sesiones            Sesion[]
+
+  atletas AsignacionAtleta[]
+
+  @@index([atletaId])
+  @@index([planEntrenamientoId])
+
+  @@map("asignacion")
+}
+
+model Sesion {
+  id             String @id @default(uuid())
+
+  asignacionId   String @map("asignacion_id")
+  asignacion     Asignacion @relation(fields: [asignacionId], references: [id])
+
+  fecha          DateTime
+
+  estado         EstadoSesion @default(pendiente)
+
+  comentarios    String?
+
+  completadaEn   DateTime? @map("completada_en")
+
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  rpe RPE?
+
+  @@index([asignacionId])
+
+  @@map("sesion")
+}
+
+model RPE {
+  id          String   @id @default(uuid())
+
+  sesionId    String   @unique @map("sesion_id")
+  sesion      Sesion   @relation(fields: [sesionId], references: [id])
+
+  valor       Int
+  comentario  String?
+
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("rpe")
+}
+
+model AsignacionAtleta {
+  asignacionId String @map("asignacion_id")
+  atletaId     String @map("atleta_id")
+
+  asignacion   Asignacion @relation(fields: [asignacionId], references: [id], onDelete: Cascade)
+  atleta       Atleta     @relation(fields: [atletaId], references: [id], onDelete: Cascade)
+
+  @@id([asignacionId, atletaId])
+
+  @@index([atletaId])
+
+  @@map("asignacion_atleta")
+}
+
+model PlanCoachAtleta {
+  id                 String @id @default(uuid())
+
+  coachId            String @map("coach_id")
+  coach              Coach @relation(fields: [coachId], references: [id])
+
+  deporteId          String @map("deporte_id")
+  deporte            Deporte @relation(fields: [deporteId], references: [id])
+
+  nombre             String
+
+  descripcion        String?
+
+  frecuencia         FrecuenciaPlanCoach
+
+  sesionesIncluidas  Int @map("sesiones_incluidas")
+
+  precio             Decimal
+
+  activo             Boolean @default(true)
+
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  suscripciones      SuscripcionAtleta[]
+
+  @@index([coachId])
+  @@index([deporteId])
+
+  @@map("plan_coach_atleta")
+}
+
+model SuscripcionAtleta {
+  id                  String @id @default(uuid())
+
+  atletaId            String @map("atleta_id")
+  atleta              Atleta @relation(fields: [atletaId], references: [id])
+
+  planCoachAtletaId   String @map("plan_coach_atleta_id")
+  planCoachAtleta     PlanCoachAtleta @relation(fields: [planCoachAtletaId], references: [id])
+
+  estado              EstadoSuscripcionAtleta
+
+  fechaInicio         DateTime @map("fecha_inicio")
+
+  fechaRenovacion     DateTime @map("fecha_renovacion")
+
+  pagos               Pago[]
+
+  @@index([atletaId])
+  @@index([planCoachAtletaId])
+
+  @@map("suscripcion_atleta")
+}
+
+model Pago {
+  id                    String @id @default(uuid())
+
+  atletaId              String @map("atleta_id")
+  atleta                Atleta @relation(fields: [atletaId], references: [id])
+
+  coachId               String @map("coach_id")
+  coach                 Coach @relation(fields: [coachId], references: [id])
+
+  suscripcionAtletaId   String @map("suscripcion_atleta_id")
+  suscripcionAtleta     SuscripcionAtleta @relation(fields: [suscripcionAtletaId], references: [id])
+
+  monto                 Decimal
+
+  comprobanteUrl        String? @map("comprobante_url")
+  comprobanteNombre     String? @map("comprobante_nombre")
+
+  estado                EstadoPago
+
+  enviadoEn             DateTime? @map("enviado_en")
+  revisadoEn            DateTime? @map("revisado_en")
+
+  notaRechazo           String? @map("nota_rechazo")
+
+  createdAt             DateTime @default(now()) @map("created_at")
+
+  @@index([atletaId])
+  @@index([coachId])
+  @@index([suscripcionAtletaId])
+
+  @@map("pago")
+}
+
+model Notificacion {
+  id              String @id @default(uuid())
+
+  usuarioId       String @map("usuario_id")
+  usuario         Usuario @relation(fields: [usuarioId], references: [id])
+
+  tipo            TipoNotificacion
+
+  titulo          String
+
+  mensaje         String
+
+  leida           Boolean @default(false)
+
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([usuarioId, leida])
+
+  @@map("notificacion")
+}
+
+model Mensaje {
+  id                  String @id @default(uuid())
+
+  remitenteId         String @map("remitente_id")
+  remitente           Usuario @relation("MensajeRemitente", fields: [remitenteId], references: [id])
+
+  destinatarioId      String @map("destinatario_id")
+  destinatario        Usuario @relation("MensajeDestinatario", fields: [destinatarioId], references: [id])
+
+  contenido           String
+
+  leido               Boolean @default(false)
+
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  @@index([remitenteId])
+  @@index([destinatarioId])
+
+  @@map("mensaje")
+}
+
+model Publicacion {
+  id              String @id @default(uuid())
+
+  coachId         String @map("coach_id")
+  coach           Coach @relation(fields: [coachId], references: [id])
+
+  contenido       String
+
+  imagenUrl       String? @map("imagen_url")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  comentarios     ComentarioPublicacion[]
+
+  reacciones      ReaccionPublicacion[]
+
+  @@index([coachId])
+
+  @@map("publicacion")
+}
+
+model ComentarioPublicacion {
+  id              String @id @default(uuid())
+
+  publicacionId   String @map("publicacion_id")
+  publicacion     Publicacion @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
+
+  usuarioId       String @map("usuario_id")
+  usuario         Usuario @relation(fields: [usuarioId], references: [id])
+
+  contenido       String
+
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([publicacionId])
+
+  @@map("comentario_publicacion")
+}
+
+model ReaccionPublicacion {
+  id              String @id @default(uuid())
+
+  publicacionId   String @map("publicacion_id")
+  publicacion     Publicacion @relation(fields: [publicacionId], references: [id], onDelete: Cascade)
+
+  usuarioId       String @map("usuario_id")
+  usuario         Usuario @relation(fields: [usuarioId], references: [id])
+
+  tipo            String
+
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@unique([publicacionId, usuarioId])
+
+  @@map("reaccion_publicacion")
+}
+
+model WearableConexion {
+  id                String @id @default(uuid())
+
+  atletaId          String @map("atleta_id")
+  atleta            Atleta @relation(fields: [atletaId], references: [id])
+
+  tipo              TipoWearable
+
+  tokenAcceso       String? @map("token_acceso")
+
+  refreshToken      String? @map("refresh_token")
+
+  tokenExpiresAt    DateTime? @map("token_expires_at")
+
+  conectado         Boolean @default(true)
+
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  @@index([atletaId])
+
+  @@map("wearable_conexion")
+}

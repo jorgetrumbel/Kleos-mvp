@@ -1,0 +1,228 @@
+# Kleos MVP - Technical ERD
+
+```mermaid
+erDiagram
+
+    USUARIO {
+        string id PK
+        string email
+        string password_hash
+        enum rol
+        datetime created_at
+    }
+
+    COACH {
+        string id PK
+        string usuario_id FK
+        string nombre_negocio
+        string descripcion
+    }
+
+    ATLETA {
+        string id PK
+        string usuario_id FK
+        float peso
+        float altura
+    }
+
+    DEPORTE {
+        string id PK
+        string nombre
+    }
+
+    COACH_DEPORTE {
+        string coach_id FK
+        string deporte_id FK
+    }
+
+    PLAN_ENTRENAMIENTO {
+        string id PK
+        string coach_id FK
+        string nombre
+        string descripcion
+        boolean es_plantilla
+        boolean es_publico
+    }
+
+    BLOQUE_ENTRENAMIENTO {
+        string id PK
+        string plan_id FK
+        string nombre
+        int orden
+    }
+
+    EJERCICIO_TEMPLATE {
+        string id PK
+        string coach_id FK
+        string nombre
+        string categoria
+    }
+
+    EJERCICIO_EN_BLOQUE {
+        string id PK
+        string bloque_id FK
+        string ejercicio_template_id FK
+        boolean es_texto_libre
+        string nombre_custom
+    }
+
+    ARCHIVO_ADJUNTO {
+        string id PK
+        string ejercicio_en_bloque_id FK
+        string url
+        string tipo
+    }
+
+    ASIGNACION {
+        string id PK
+        string coach_id FK
+        string plan_id FK
+        date fecha_inicio
+    }
+
+    ASIGNACION_ATLETA {
+        string asignacion_id FK
+        string atleta_id FK
+    }
+
+    SESION {
+        string id PK
+        string asignacion_id FK
+        date fecha_programada
+        enum estado
+    }
+
+    RPE {
+        string id PK
+        string sesion_id FK
+        int valor
+    }
+
+    PLAN_COACH_ATLETA {
+        string id PK
+        string coach_id FK
+        string deporte_id FK
+        decimal precio
+        enum frecuencia
+    }
+
+    SUSCRIPCION_ATLETA {
+        string id PK
+        string atleta_id FK
+        string plan_coach_atleta_id FK
+        enum estado
+    }
+
+    PAGO {
+        string id PK
+        string atleta_id FK
+        string coach_id FK
+        string suscripcion_atleta_id FK
+        decimal monto
+        enum estado
+    }
+
+    MENSAJE {
+        string id PK
+        string remitente_id FK
+        string destinatario_id FK
+        boolean leido
+    }
+
+    NOTIFICACION {
+        string id PK
+        string usuario_id FK
+        enum tipo
+        boolean leida
+    }
+
+    PUBLICACION {
+        string id PK
+        string coach_id FK
+    }
+
+    COMENTARIO_PUBLICACION {
+        string id PK
+        string publicacion_id FK
+        string usuario_id FK
+    }
+
+    REACCION_PUBLICACION {
+        string id PK
+        string publicacion_id FK
+        string usuario_id FK
+    }
+
+    WEARABLE_CONEXION {
+        string id PK
+        string atleta_id FK
+        enum tipo
+    }
+
+    PLAN_ATHLETICA {
+        string id PK
+        string nombre
+        decimal precio
+    }
+
+    SUSCRIPCION_COACH {
+        string id PK
+        string coach_id FK
+        string plan_athletica_id FK
+    }
+
+    USUARIO ||--o| COACH : has
+    USUARIO ||--o| ATLETA : has
+
+    COACH ||--o{ COACH_DEPORTE : coaches
+    DEPORTE ||--o{ COACH_DEPORTE : belongs
+
+    COACH ||--o{ PLAN_ENTRENAMIENTO : owns
+
+    PLAN_ENTRENAMIENTO ||--o{ BLOQUE_ENTRENAMIENTO : contains
+
+    BLOQUE_ENTRENAMIENTO ||--o{ EJERCICIO_EN_BLOQUE : contains
+
+    EJERCICIO_TEMPLATE ||--o{ EJERCICIO_EN_BLOQUE : references
+
+    EJERCICIO_EN_BLOQUE ||--o{ ARCHIVO_ADJUNTO : files
+
+    PLAN_ENTRENAMIENTO ||--o{ ASIGNACION : assigned
+
+    ASIGNACION ||--o{ ASIGNACION_ATLETA : targets
+
+    ATLETA ||--o{ ASIGNACION_ATLETA : receives
+
+    ASIGNACION ||--o{ SESION : generates
+
+    SESION ||--o| RPE : evaluates
+
+    COACH ||--o{ PLAN_COACH_ATLETA : offers
+
+    DEPORTE ||--o{ PLAN_COACH_ATLETA : category
+
+    PLAN_COACH_ATLETA ||--o{ SUSCRIPCION_ATLETA : subscriptions
+
+    ATLETA ||--o{ SUSCRIPCION_ATLETA : owns
+
+    SUSCRIPCION_ATLETA ||--o{ PAGO : payments
+
+    COACH ||--o{ PAGO : receives
+
+    ATLETA ||--o{ PAGO : submits
+
+    USUARIO ||--o{ MENSAJE : sends
+    USUARIO ||--o{ NOTIFICACION : receives
+
+    COACH ||--o{ PUBLICACION : creates
+
+    PUBLICACION ||--o{ COMENTARIO_PUBLICACION : comments
+
+    PUBLICACION ||--o{ REACCION_PUBLICACION : reactions
+
+    ATLETA ||--o{ WEARABLE_CONEXION : connects
+
+    PLAN_ATHLETICA ||--o{ SUSCRIPCION_COACH : includes
+
+    COACH ||--o{ SUSCRIPCION_COACH : subscribes
+```
